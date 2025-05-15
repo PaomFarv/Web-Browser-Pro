@@ -10,8 +10,8 @@ class PaomWebBrowser():
         self.window.setGeometry(100, 100, 1200, 800)
         self.window.setWindowIcon(QIcon("browsericon.png"))
 
-        self.layout = QHBoxLayout()
-        self.horizontal_layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
+        self.horizontal_layout = QHBoxLayout()
 
         self.url_bar = QLineEdit()
         self.url_bar.setPlaceholderText("Enter URL here...")
@@ -47,22 +47,23 @@ class PaomWebBrowser():
         self.horizontal_layout.addWidget(self.backward_button)
         self.horizontal_layout.addWidget(self.forward_button)
 
-        self.add_tab_button = QPushButton("+ New Tab")
+        self.add_tab_button = QPushButton("New Tab")
         self.add_tab_button.setFont(QFont("Arial", 12))
         self.add_tab_button.setMinimumHeight(30)
 
         self.horizontal_layout.addWidget(self.add_tab_button)
-        self.horizontal_layout.addStretch()
 
         self.browser = QWebEngineView()
         self.browser.setUrl(QUrl("https://www.google.com"))
         self.browser.setStyleSheet("background-color: #ffffff; border-radius: 5px; padding: 5px;")
 
-        self.search_button.clicked.connect(lambda: self.search(self.url_bar.text()))
-        self.backward_button.clicked.connect(self.browser.back)
-        self.forward_button.clicked.connect(self.browser.forward)
-        self.refresh_button.clicked.connect(self.browser.reload)
-        self.home_button.clicked.connect(lambda: self.search("https://www.google.com"))
+        self.search_button.clicked.connect(lambda: self.tabs.currentWidget().setUrl(QUrl(self.url_bar.text())))
+        self.url_bar.returnPressed.connect(lambda: self.tabs.currentWidget().setUrl(QUrl(self.url_bar.text())))
+        
+        self.backward_button.clicked.connect(lambda: self.tabs.currentWidget().back())
+        self.forward_button.clicked.connect(lambda: self.tabs.currentWidget().forward())
+        self.refresh_button.clicked.connect(lambda: self.tabs.currentWidget().reload())
+        self.home_button.clicked.connect(lambda: self.tabs.currentWidget().setUrl(QUrl("https://www.google.com")))
 
         self.layout.addLayout(self.horizontal_layout)
         self.layout.addWidget(self.browser)
@@ -71,10 +72,10 @@ class PaomWebBrowser():
         self.tabs = QTabWidget()
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
-        self.tabs.addTab(self.browser, "Tab 1")
-        self.tabs.setCurrentIndex(0)
+        self.tabs.addTab(self.browser, "Loading...")
+        self.browser.loadFinished.connect(lambda: self.update_url_bar(self.browser))
         
-        self.horizontal_layout.addWidget(self.tabs)
+        self.layout.addWidget(self.tabs)
         self.add_tab_button.clicked.connect(self.add_new_tab)
 
         self.window.show()
@@ -121,8 +122,8 @@ app.setStyleSheet("""
     }
 
     QLineEdit {
-        background-color: #C0C0C0;
-        color: white;
+        background-color: #D3D3D3;
+        color: black;
         border-radius: 5px;
         padding: 5px;
     }
