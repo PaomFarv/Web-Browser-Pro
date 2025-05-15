@@ -10,8 +10,8 @@ class PaomWebBrowser():
         self.window.setGeometry(100, 100, 1200, 800)
         self.window.setWindowIcon(QIcon("browsericon.png"))
 
-        self.layout = QVBoxLayout()
-        self.horizontal_layout = QHBoxLayout()
+        self.layout = QHBoxLayout()
+        self.horizontal_layout = QVBoxLayout()
 
         self.url_bar = QLineEdit()
         self.url_bar.setPlaceholderText("Enter URL here...")
@@ -47,6 +47,13 @@ class PaomWebBrowser():
         self.horizontal_layout.addWidget(self.backward_button)
         self.horizontal_layout.addWidget(self.forward_button)
 
+        self.add_tab_button = QPushButton("+ New Tab")
+        self.add_tab_button.setFont(QFont("Arial", 12))
+        self.add_tab_button.setMinimumHeight(30)
+
+        self.horizontal_layout.addWidget(self.add_tab_button)
+        self.horizontal_layout.addStretch()
+
         self.browser = QWebEngineView()
         self.browser.setUrl(QUrl("https://www.google.com"))
         self.browser.setStyleSheet("background-color: #ffffff; border-radius: 5px; padding: 5px;")
@@ -59,9 +66,46 @@ class PaomWebBrowser():
 
         self.layout.addLayout(self.horizontal_layout)
         self.layout.addWidget(self.browser)
-
         self.window.setLayout(self.layout)
+
+        self.tabs = QTabWidget()
+        self.tabs.setTabsClosable(True)
+        self.tabs.tabCloseRequested.connect(self.close_tab)
+        self.tabs.addTab(self.browser, "Tab 1")
+        self.tabs.setCurrentIndex(0)
+        
+        self.horizontal_layout.addWidget(self.tabs)
+        self.add_tab_button.clicked.connect(self.add_new_tab)
+
         self.window.show()
+
+    def add_new_tab(self):
+        new_tab = QWebEngineView()
+        new_tab.setUrl(QUrl("https://www.google.com"))
+        
+        self.tabs.addTab(new_tab, "New Tab")
+        self.tabs.setCurrentWidget(new_tab)
+        
+        new_tab.loadFinished.connect(lambda: self.update_url_bar(new_tab))
+
+    def update_url_bar(self, browser):
+        url = browser.url().toString()
+        self.url_bar.setText(url)
+
+        # Update the tab title with the page title
+        title = browser.page().title()
+        index = self.tabs.indexOf(browser)
+        if index != -1:
+            self.tabs.setTabText(index, title)
+        
+        # Update the URL bar when the page is loaded
+        browser.loadFinished.connect(lambda: self.update_url_bar(browser))
+
+    def close_tab(self, index):
+        if self.tabs.count() > 1:
+            self.tabs.removeTab(index)
+        else:
+            QMessageBox.warning(self.window, "Warning", "Cannot close the last tab.")
 
     def search(self,url):
         if url.startswith("http://") or url.startswith("https://"):
