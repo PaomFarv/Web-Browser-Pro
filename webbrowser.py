@@ -19,6 +19,7 @@ class PaomWebBrowser():
 
         self.url_bar.setFont(QFont("Arial", 12))
         self.url_bar.setAlignment(Qt.AlignLeft)
+        self.url_bar.mousePressEvent = self.clear_url_bar  # Clear text when clicked
 
         self.search_button = QPushButton("⌕")
         self.search_button.setFont(QFont("Arial", 15))
@@ -79,6 +80,9 @@ class PaomWebBrowser():
         self.add_tab_button.clicked.connect(self.add_new_tab)
 
         self.window.show() # Default to the initial browser instance
+
+    def clear_url_bar(self, event):
+        self.url_bar.clear()  # Clears text when clicked
 
     def add_new_tab(self):
         new_tab = QWebEngineView()
