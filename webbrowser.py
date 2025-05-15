@@ -93,18 +93,18 @@ class PaomWebBrowser():
         
         new_tab.loadFinished.connect(lambda: self.update_url_bar(new_tab))
 
-    def update_url_bar(self, browser):
-        url = browser.url().toString()
+    def update_url_bar(self, tab):
+        url = tab.url().toString()
         self.url_bar.setText(url)
 
         # Update the tab title with the page title
-        title = browser.page().title()
-        index = self.tabs.indexOf(browser)
+        title = tab.page().title()
+        index = self.tabs.indexOf(tab)
         if index != -1:
             self.tabs.setTabText(index, title)
         
         # Update the URL bar when the page is loaded
-        browser.loadFinished.connect(lambda: self.update_url_bar(browser))
+        tab.loadFinished.connect(lambda: self.update_url_bar(tab))
 
     def close_tab(self, index):
         if self.tabs.count() > 1:
@@ -126,14 +126,57 @@ app = QApplication([])
 
 app.setStyleSheet("""
     QMainWindow {
-        background-color: #808080;
+        background-color: #F5F5F5; /* Light gray modern background */
     }
 
     QLineEdit {
-        background-color: #D3D3D3;
-        color: black;
-        border-radius: 5px;
-        padding: 5px;
+        background-color: #FFFFFF;
+        color: #333333;
+        border: 2px solid #CCCCCC;
+        border-radius: 6px;
+        padding: 6px;
+        font-size: 14px;
+        selection-background-color: #0078D7; /* Light blue highlight */
+    }
+
+    QPushButton {
+        background-color: #EAEAEA;
+        color: #333333;
+        border-radius: 6px;
+        padding: 8px;
+        font-weight: bold;
+        font-size: 14px;
+        border: 2px solid #CCCCCC;
+    }
+
+    QPushButton:hover {
+        background-color: #0078D7; /* Smooth blue hover effect */
+        color: #FFFFFF;
+    }
+
+    QTabWidget::pane {
+        border: 2px solid #CCCCCC;
+        background-color: #FFFFFF;
+        border-radius: 8px;
+    }
+
+    QTabBar::tab {
+        background-color: #EAEAEA;
+        color: #333333;
+        padding: 6px;
+        border: 2px solid #CCCCCC;
+        border-radius: 6px;
+    }
+
+    QTabBar::tab:selected {
+        background-color: #0078D7; /* Blue highlight on active tab */
+        font-weight: bold;
+        color: #FFFFFF;
+    }
+
+    QWebEngineView {
+        border-radius: 8px;
+        background-color: #FFFFFF;
     }
 """)
 
