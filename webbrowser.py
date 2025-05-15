@@ -21,23 +21,28 @@ class PaomWebBrowser():
         self.url_bar.setAlignment(Qt.AlignLeft)
 
         self.search_button = QPushButton("⌕")
-        self.search_button.setFont(QFont("Arial", 12))
+        self.search_button.setFont(QFont("Arial", 15))
         self.search_button.setMinimumHeight(30)
+
+        self.home_button = QPushButton("Home")
+        self.home_button.setFont(QFont("Arial", 12))
+        self.home_button.setMinimumHeight(30)
         
-        self.refresh_button = QPushButton("↻")
+        self.refresh_button = QPushButton("Reload")
         self.refresh_button.setFont(QFont("Arial", 12))
         self.refresh_button.setMinimumHeight(30)
         
         self.backward_button = QPushButton("<")  
-        self.backward_button.setFont(QFont("Arial", 12))
+        self.backward_button.setFont(QFont("Arial", 15))
         self.backward_button.setMinimumHeight(30)
 
         self.forward_button = QPushButton(">")
-        self.forward_button.setFont(QFont("Arial", 12))
+        self.forward_button.setFont(QFont("Arial", 15))
         self.forward_button.setMinimumHeight(30)
         
         self.horizontal_layout.addWidget(self.url_bar)
         self.horizontal_layout.addWidget(self.search_button)
+        self.horizontal_layout.addWidget(self.home_button)
         self.horizontal_layout.addWidget(self.refresh_button)
         self.horizontal_layout.addWidget(self.backward_button)
         self.horizontal_layout.addWidget(self.forward_button)
@@ -50,6 +55,7 @@ class PaomWebBrowser():
         self.backward_button.clicked.connect(self.browser.back)
         self.forward_button.clicked.connect(self.browser.forward)
         self.refresh_button.clicked.connect(self.browser.reload)
+        self.home_button.clicked.connect(lambda: self.search("https://www.google.com"))
 
         self.layout.addLayout(self.horizontal_layout)
         self.layout.addWidget(self.browser)
