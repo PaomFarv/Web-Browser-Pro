@@ -57,8 +57,8 @@ class PaomWebBrowser():
         self.browser.setUrl(QUrl("https://www.google.com"))
         self.browser.setStyleSheet("background-color: #ffffff; border-radius: 5px; padding: 5px;")
 
-        self.search_button.clicked.connect(lambda: self.tabs.currentWidget().setUrl(QUrl(self.url_bar.text())))
-        self.url_bar.returnPressed.connect(lambda: self.tabs.currentWidget().setUrl(QUrl(self.url_bar.text())))
+        self.search_button.clicked.connect(self.search)
+        self.search_button.setShortcut(QKeySequence("Return"))
         
         self.backward_button.clicked.connect(lambda: self.tabs.currentWidget().back())
         self.forward_button.clicked.connect(lambda: self.tabs.currentWidget().forward())
@@ -78,7 +78,7 @@ class PaomWebBrowser():
         self.layout.addWidget(self.tabs)
         self.add_tab_button.clicked.connect(self.add_new_tab)
 
-        self.window.show()
+        self.window.show() # Default to the initial browser instance
 
     def add_new_tab(self):
         new_tab = QWebEngineView()
@@ -108,11 +108,15 @@ class PaomWebBrowser():
         else:
             QMessageBox.warning(self.window, "Warning", "Cannot close the last tab.")
 
-    def search(self,url):
-        if url.startswith("http://") or url.startswith("https://"):
-            self.browser.setUrl(QUrl(url))
-        else:
-            self.browser.setUrl(QUrl("https://www.google.com/search?q=" + url))
+    def search(self):
+        url = self.url_bar.text()
+
+        current_browser = self.tabs.currentWidget()  # Get the active tab's web view
+        if isinstance(current_browser, QWebEngineView):  
+            if url.startswith("http://") or url.startswith("https://"):
+                current_browser.setUrl(QUrl(url))  # Apply the URL to the active tab
+            else:
+                current_browser.setUrl(QUrl(f"https://www.google.com/search?q={url}"))  # Search in Google
 
 app = QApplication([])
 
